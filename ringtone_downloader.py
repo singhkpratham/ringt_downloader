@@ -33,15 +33,15 @@ import urllib.request
 all_fld = set()
 all_file = set()
 def dwnld(link,dir_name=""):
-    breakpoint()
+##    breakpoint()
     global all_fld,all_file
     dir_name = Path.cwd() if dir_name is None else Path.cwd()/dir_name
     dir_name.mkdir(exist_ok=True)
     src = str(urllib.request.urlopen(link).read())
     fld_links = set(re.findall('href=.{1,5}(http.{1,30}data\/\d{4,6}.{5,50}\.html)',src)).difference(all_fld)
     file_links = set(re.findall('href=.{1,5}(http.{1,30}data\/file\/\d{4,6}.{5,50}\.html)',src)).difference(all_file)
-    all_fld = all_fld.update(fld_links)
-    all_file = all_file.update(file_links)
+    all_fld.update(fld_links)
+    all_file.update(file_links)
 
     if file_links:
         for link in file_links:
@@ -49,9 +49,9 @@ def dwnld(link,dir_name=""):
             urllib.request.urlretrieve(link+'?download',
                            dir_name/(file_name+'.mp3'))
             print(dir_name/(file_name+'.mp3'))
-    
-    for link in fld_links:
-        folder_name = ''.join(re.findall( '\/([^\/]*?)\.html',link))
-        new_path = Path.cwd()/dir_name/folder_name
-        print(new_path)
-        dwnld(link,new_path)
+    elif fld_links:
+        for link in fld_links:
+            folder_name = ''.join(re.findall( '\/([^\/]*?)\.html',link))
+            new_path = Path.cwd()/dir_name/folder_name
+            print(new_path)
+            dwnld(link,new_path)
